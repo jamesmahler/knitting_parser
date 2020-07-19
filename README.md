@@ -11,8 +11,8 @@ There seems to be no real standard for the syntax of a knitting pattern, so we a
 - All stitch names are lower case
 - A comma `,` separates stitches
 - Stitches can be grouped in parenthesis `(` and `)`
-- Multipliers can be provided after a group or stitch with an x preceeding the number like `k x12` for twelve knits in a row
-- Multipliers and switches can be combined like `(k, (p, ml)x2)x2` to produce `k, p, ml, p, ml, k, p, ml, p, ml`
+- Multipliers can be provided after a group or stitch: `k x12` for twelve knits in a row
+- Groups can be embedded: `(k, (p, ml)x2)x2` to produce `k, p, ml, p, ml, k, p, ml, p, ml`
 
 ## Stitches
 
