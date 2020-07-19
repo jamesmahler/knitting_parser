@@ -1,6 +1,7 @@
 # knitting_parser
 
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Rust](https://github.com/jamesmahler/knitting_parser/workflows/Rust/badge.svg?branch=master)
 
 A library designed to assist with parsing knitting patterns.
 
