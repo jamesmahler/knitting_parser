@@ -1,0 +1,8 @@
+[package]
+name = "knitting_parse"
+version = "0.1.0"
+authors = ["James Mahler <james.mahler@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+nom = "5.0.1"
