@@ -25,7 +25,7 @@ pub struct ParseError {
 
 impl ParseError {
     pub fn new(error_type: ParseErrorType, line_number: usize) -> ParseError {
-        ParseError{error_type, line_number}
+        ParseError { error_type, line_number }
     }
 
     pub fn error_type(&self) -> ParseErrorType {

@@ -14,33 +14,33 @@ pub struct Pattern {
 impl Pattern {
     pub fn new(first_line_number: usize, mut lines: Vec<VecDeque<Stitch>>) -> Result<Pattern, ParseError> {
         let mut pattern_width = 0;
-    
+
         for line in &lines {
             pattern_width = max(pattern_width, line.len());
         }
-    
+
         for (line_number, line) in lines.iter_mut().enumerate() {
             if line.len() == pattern_width {
                 continue;
             }
-    
+
             let mut needed_stitches = pattern_width - line.len();
-    
+
             if needed_stitches % 2 != 0 {
                 let error_type = ParseErrorType::InvalidStitchCount(line.len());
-    
+
                 return Err(ParseError::new(error_type, line_number));
             }
-    
+
             while needed_stitches != 0 {
                 line.push_front(Stitch::NoStitch);
                 line.push_back(Stitch::NoStitch);
-    
+
                 needed_stitches -= 2;
             }
         }
-    
-        Ok(Pattern{first_line_number, lines})
+
+        Ok(Pattern { first_line_number, lines })
     }
 
     pub fn first_line_number(&self) -> usize {

@@ -173,7 +173,7 @@ fn extract_parse_error_type(starting_line: &str, line: &str) -> ParseErrorType {
 pub fn parse_stitches(line: &str, line_number: usize) -> Result<VecDeque<Stitch>, ParseError> {
     // TODO: need to parse off line number override and return
 
-    let starting_line = line.clone();
+    let starting_line = line;
 
     match separated_list(char(','), alt((padded_group, padded_stitch)))(line) {
         Ok((line, stitches)) => {
