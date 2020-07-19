@@ -2,6 +2,7 @@
 
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Rust](https://github.com/jamesmahler/knitting_parser/workflows/Rust/badge.svg?branch=master)
+[![Crates.io Version](https://img.shields.io/crates/v/knitting_parser.svg)](https://crates.io/crates/knitting_parser)
 
 A library designed to assist with parsing knitting patterns.
 
