@@ -51,4 +51,4 @@ There seems to be no real standard for the syntax of a knitting pattern, so we a
 - yo
 
 ## Documentation
-[https://docs.rs/knitting_parse](docs.rs)
+[docs.rs](https://docs.rs/knitting_parse)
