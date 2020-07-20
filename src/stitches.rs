@@ -1,3 +1,6 @@
+//! Holds the definition and details for the supported stitches
+
+/// The supported stitches
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Stitch {
     // Single
@@ -43,7 +46,10 @@ pub enum Stitch {
 }
 
 impl Stitch {
-    pub fn width(&self) -> u8 {
+    /// Returns the width of the stitch.
+    ///
+    /// This is useful when trying to layout the stitches next to each other.
+    pub fn width(&self) -> usize {
         match self {
             Stitch::K => 1,
             Stitch::P => 1,

@@ -1,3 +1,5 @@
+//! Handles parsing a line into stitches
+
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -170,9 +172,25 @@ fn extract_parse_error_type(starting_line: &str, line: &str) -> ParseErrorType {
     ParseErrorType::InvalidSyntaxRange(range_start, range_end)
 }
 
+/// Parse a given line into stitches.
+///
+/// A `VecDeque` is used to more easily pad the lines later if making a `Pattern`.
+///
+/// # Arguments
+///
+/// * `line` - The line to parse
+/// * `line_number` - What line number this line is (used for error reporting)
+///
+/// # Examples
+///
+/// ```
+/// use knitting_parse::parse_line::parse_stitches;
+/// match parse_stitches("k, p", 0) {
+///     Ok(stitches) => { /* Do something with them. */ },
+///     Err(err) => { /* Handle parse error. */}
+/// }
+/// ```
 pub fn parse_stitches(line: &str, line_number: usize) -> Result<VecDeque<Stitch>, ParseError> {
-    // TODO: need to parse off line number override and return
-
     let starting_line = line;
 
     match separated_list(char(','), alt((padded_group, padded_stitch)))(line) {
