@@ -49,3 +49,6 @@ There seems to be no real standard for the syntax of a knitting pattern, so we a
 - ssk
 - ssp
 - yo
+
+## Documentation
+[https://docs.rs/knitting_parse](docs.rs)
