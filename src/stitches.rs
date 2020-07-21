@@ -1,7 +1,7 @@
 //! Holds the definition and details for the supported stitches
 
 /// The supported stitches
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum Stitch {
     // Single
     K,
