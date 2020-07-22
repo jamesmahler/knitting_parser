@@ -19,6 +19,7 @@ use crate::parse_line;
 pub struct Pattern {
     first_line_number: usize,
     lines: Vec<VecDeque<Stitch>>,
+    pattern_width: usize,
     starting_side: Side,
     in_round: bool,
 }
@@ -88,6 +89,7 @@ impl Pattern {
         Ok(Pattern {
             first_line_number: 1,
             lines,
+            pattern_width,
             starting_side: Side::RS,
             in_round: false,
         })
@@ -111,6 +113,11 @@ impl Pattern {
     /// Return if the patter is in the round
     pub fn in_round(&self) -> bool {
         self.in_round
+    }
+
+    /// Returns the pattern switch width
+    pub fn pattern_width(&self) -> usize {
+        self.pattern_width
     }
 }
 
