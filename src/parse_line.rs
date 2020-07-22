@@ -13,9 +13,9 @@ use nom::{
 use std::collections::VecDeque;
 use std::str;
 
-use crate::error::ParseError;
-use crate::error::ParseErrorType;
-use crate::stitches::Stitch;
+use crate::ParseError;
+use crate::ParseErrorType;
+use crate::Stitch;
 
 fn stitch<'a>(stitch_str: &'a str, stitch_type: Stitch) -> impl Fn(&'a str) -> IResult<&'a str, Stitch> {
     move |line: &'a str| {
@@ -181,15 +181,6 @@ fn extract_parse_error_type(starting_line: &str, line: &str) -> ParseErrorType {
 /// * `line` - The line to parse
 /// * `line_number` - What line number this line is (used for error reporting)
 ///
-/// # Examples
-///
-/// ```
-/// use knitting_parse::parse_line::parse_stitches;
-/// match parse_stitches("k, p", 0) {
-///     Ok(stitches) => { /* Do something with them. */ },
-///     Err(err) => { /* Handle parse error. */}
-/// }
-/// ```
 pub fn parse_stitches(line: &str, line_number: usize) -> Result<VecDeque<Stitch>, ParseError> {
     let starting_line = line;
 
@@ -252,7 +243,7 @@ mod test {
 
             // 'k, p' will parse
             // ', bad' will not
-            if let ParseErrorType::InvalidSyntaxRange(range_start, range_end) = parse_error.error_type() {
+            if let ParseErrorType::InvalidSyntaxRange(range_start, range_end) = **parse_error.error_type() {
                 assert_eq!(range_start, 4);
                 assert_eq!(range_end, 8);
             } else {

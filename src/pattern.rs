@@ -1,12 +1,17 @@
 //! Turns `Vec`s of stitches into a Pattern
 
-use std::cmp::max;
+use std::{
+    cmp,
+    collections::VecDeque,
+    io::{BufRead, BufReader},
+};
 
-use std::collections::VecDeque;
+use crate::ParseError;
+use crate::ParseErrorType;
+use crate::Side;
+use crate::Stitch;
 
-use crate::error::ParseError;
-use crate::error::ParseErrorType;
-use crate::stitches::Stitch;
+use crate::parse_line;
 
 /// The representation of a knitting pattern.
 ///
@@ -14,6 +19,8 @@ use crate::stitches::Stitch;
 pub struct Pattern {
     first_line_number: usize,
     lines: Vec<VecDeque<Stitch>>,
+    starting_side: Side,
+    in_round: bool,
 }
 
 fn calculate_line_width(stitches: &VecDeque<Stitch>) -> usize {
@@ -25,19 +32,35 @@ fn calculate_line_width(stitches: &VecDeque<Stitch>) -> usize {
 }
 
 impl Pattern {
-    /// Create a new Pattern from the given stitches.
+    /// Create a new Pattern from the given Reader.
     ///
     /// This will pad the rows so they are all the same total width.
     ///
     /// # Arguments
     ///
-    /// * `first_line_number` - The first line number to give the pattern
-    /// * `lines` - The lines of stitches to give to the pattern
-    pub fn new(first_line_number: usize, mut lines: Vec<VecDeque<Stitch>>) -> Result<Pattern, ParseError> {
+    /// * `reader` - Where to read the stitches from
+    ///
+    pub fn new<R: std::io::Read>(reader: R) -> Result<Pattern, ParseError> {
+        let reader = BufReader::new(reader);
+
+        let mut lines: Vec<VecDeque<Stitch>> = Vec::new();
+        let mut line_number = 1;
         let mut pattern_width = 0;
 
-        for line in &lines {
-            pattern_width = max(pattern_width, calculate_line_width(line));
+        for line in reader.lines() {
+            match line {
+                Ok(line) => {
+                    let line_stitches = parse_line::parse_stitches(&line, line_number)?;
+                    let line_width = calculate_line_width(&line_stitches);
+                    pattern_width = cmp::max(pattern_width, line_width);
+
+                    lines.push(line_stitches);
+                }
+                Err(error) => {
+                    return Err(ParseError::new(ParseErrorType::UnableToReadFromReader(Box::new(error)), line_number));
+                }
+            }
+            line_number += 1;
         }
 
         for (line_number, line) in lines.iter_mut().enumerate() {
@@ -62,7 +85,12 @@ impl Pattern {
             }
         }
 
-        Ok(Pattern { first_line_number, lines })
+        Ok(Pattern {
+            first_line_number: 1,
+            lines,
+            starting_side: Side::RS,
+            in_round: false,
+        })
     }
 
     /// Returns the first line number for the pattern
@@ -74,6 +102,16 @@ impl Pattern {
     pub fn lines(&self) -> &Vec<VecDeque<Stitch>> {
         &self.lines
     }
+
+    /// Return what side the pattern starts on
+    pub fn starting_side(&self) -> Side {
+        self.starting_side
+    }
+
+    /// Return if the patter is in the round
+    pub fn in_round(&self) -> bool {
+        self.in_round
+    }
 }
 
 #[cfg(test)]
@@ -83,8 +121,8 @@ mod test {
 
     #[test]
     fn simple_pattern() {
-        let lines = vec![VecDeque::from(vec![K; 5]), VecDeque::from(vec![K; 7])];
-        let pattern = Pattern::new(1, lines).unwrap();
+        let input = b"k x5\nk x7";
+        let pattern = Pattern::new(&input[..]).unwrap();
 
         assert_eq!(
             pattern.lines,
@@ -94,18 +132,18 @@ mod test {
 
     #[test]
     fn stitch_widths() {
-        let lines = vec![VecDeque::from(vec![K; 4]), VecDeque::from(vec![Lcf1, Rcb1])];
-        let pattern = Pattern::new(1, lines).unwrap();
+        let input = b"k x4\n1lcf, 1rcb";
+        let pattern = Pattern::new(&input[..]).unwrap();
 
         assert_eq!(pattern.lines, vec![VecDeque::from(vec![K, K, K, K]), VecDeque::from(vec![Lcf1, Rcb1]),]);
     }
 
     #[test]
     fn simple_exception() {
-        let lines = vec![VecDeque::from(vec![K; 6]), VecDeque::from(vec![K; 7])];
+        let input = b"k x6\nk x7";
 
-        if let Err(parse_error) = Pattern::new(1, lines) {
-            if let ParseErrorType::InvalidStitchCount(count) = parse_error.error_type() {
+        if let Err(parse_error) = Pattern::new(&input[..]) {
+            if let ParseErrorType::InvalidStitchCount(count) = **parse_error.error_type() {
                 assert_eq!(count, 6);
             } else {
                 assert!(false, "Wrong error type returned");

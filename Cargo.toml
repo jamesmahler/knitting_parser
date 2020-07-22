@@ -1,6 +1,6 @@
 [package]
 name = "knitting_parse"
-version = "0.1.4"
+version = "0.2.0"
 authors = ["James Mahler <james.mahler@gmail.com>"]
 edition = "2018"
 description = "A knitting parser library based on nom."
@@ -10,4 +10,4 @@ license-file = "LICENSE"
 keywords = ["knitting", "knit"]
 
 [dependencies]
-nom = "5.0.1"
+nom = "5.1.2"
