@@ -15,6 +15,11 @@ There seems to be no real standard for the syntax of a knitting pattern, so we a
 - Stitches can be grouped in parenthesis `(` and `)`
 - Multipliers can be provided after a group or stitch: `k x12` for twelve knits in a row
 - Groups can be embedded: `(k, (p, ml)x2)x2` to produce `k, p, ml, p, ml, k, p, ml, p, ml`
+- Line starting with ## are for options
+	- in_round : used to say the pattern is in the round.
+	- start_wrong_side : used to say the pattern starts on the wrong side.
+	- first_line=X : used to say the first line is X
+- Lines starting with # are ignored
 
 ## Stitches
 
