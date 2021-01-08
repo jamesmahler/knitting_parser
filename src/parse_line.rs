@@ -5,7 +5,7 @@ use nom::{
     bytes::complete::tag,
     character::complete::{char, digit1, space0},
     combinator::opt,
-    multi::separated_list,
+    multi::separated_list1,
     sequence::preceded,
     IResult,
 };
@@ -13,8 +13,8 @@ use nom::{
 use std::collections::VecDeque;
 use std::str;
 
+use crate::util::into_parse_error;
 use crate::ParseError;
-use crate::ParseErrorType;
 use crate::Stitch;
 
 fn stitch<'a>(stitch_str: &'a str, stitch_type: Stitch) -> impl Fn(&'a str) -> IResult<&'a str, Stitch> {
@@ -39,7 +39,7 @@ fn multiplier(line: &str) -> IResult<&str, usize> {
 fn padded_group(line: &str) -> IResult<&str, std::vec::Vec<Stitch>> {
     let (line, _) = space0(line)?;
     let (line, _) = tag("(")(line)?;
-    let (line, vecs) = separated_list(char(','), alt((padded_group, padded_stitch)))(line)?;
+    let (line, vecs) = separated_list1(char(','), alt((padded_group, padded_stitch)))(line)?;
     let (line, _) = space0(line)?;
     let (line, _) = tag(")")(line)?;
     let (line, _) = space0(line)?;
@@ -165,13 +165,6 @@ fn padded_stitch(line: &str) -> IResult<&str, std::vec::Vec<Stitch>> {
     }
 }
 
-fn extract_parse_error_type(starting_line: &str, line: &str) -> ParseErrorType {
-    let range_start = starting_line.len() - line.len();
-    let range_end = starting_line.len() - 1;
-
-    ParseErrorType::InvalidSyntaxRange(range_start, range_end)
-}
-
 /// Parse a given line into stitches.
 ///
 /// A `VecDeque` is used to more easily pad the lines later if making a `Pattern`.
@@ -184,7 +177,7 @@ fn extract_parse_error_type(starting_line: &str, line: &str) -> ParseErrorType {
 pub fn parse_stitches(line: &str, line_number: usize) -> Result<VecDeque<Stitch>, ParseError> {
     let starting_line = line;
 
-    match separated_list(char(','), alt((padded_group, padded_stitch)))(line) {
+    match separated_list1(char(','), alt((padded_group, padded_stitch)))(line) {
         Ok((line, stitches)) => {
             // Combine all the above vectors into one.
             let mut vec = VecDeque::new();
@@ -200,35 +193,21 @@ pub fn parse_stitches(line: &str, line_number: usize) -> Result<VecDeque<Stitch>
             }
 
             if !line.is_empty() {
-                let error_type = extract_parse_error_type(starting_line, line);
-
-                return Err(ParseError::new(error_type, line_number));
+                return Err(into_parse_error(starting_line, line, line_number));
             }
 
             Ok(vec)
         }
 
-        Err(err) => match err {
-            nom::Err::Incomplete(_) => {
-                let error_type = extract_parse_error_type(starting_line, line);
-                Err(ParseError::new(error_type, line_number))
-            }
-            nom::Err::Error((line, _)) => {
-                let error_type = extract_parse_error_type(starting_line, line);
-                Err(ParseError::new(error_type, line_number))
-            }
-            nom::Err::Failure((line, _)) => {
-                let error_type = extract_parse_error_type(starting_line, line);
-                Err(ParseError::new(error_type, line_number))
-            }
-        },
+        Err(_) => Err(into_parse_error(starting_line, line, line_number)),
     }
 }
 
 #[cfg(test)]
 mod test {
-    use super::Stitch::*;
     use super::*;
+    use crate::ParseErrorType;
+    use crate::Stitch::*;
 
     #[test]
     fn simple_parse() {
