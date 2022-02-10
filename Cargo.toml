@@ -10,4 +10,4 @@ license-file = "LICENSE"
 keywords = ["knitting", "knit"]
 
 [dependencies]
-nom = "6.2.1"
+nom = "7.1.0"
