@@ -103,7 +103,7 @@ impl Options {
             line_ending(line)?;
         }
 
-        return Ok((line, ()));
+        Ok((line, ()))
     }
 
     /// Parse the options from the given line.

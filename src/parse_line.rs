@@ -222,7 +222,7 @@ mod test {
 
             // 'k, p' will parse
             // ', bad' will not
-            if let ParseErrorType::InvalidSyntaxRange(range_start, range_end) = **parse_error.error_type() {
+            if let ParseErrorType::InvalidSyntaxRange(range_start, range_end) = *parse_error.error_type() {
                 assert_eq!(range_start, 4);
                 assert_eq!(range_end, 8);
             } else {

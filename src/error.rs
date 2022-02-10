@@ -53,7 +53,7 @@ impl ParseError {
     }
 
     /// Returns the contained error type
-    pub fn error_type(&self) -> &Box<ParseErrorType> {
+    pub fn error_type(&self) -> &ParseErrorType {
         &self.error_type
     }
 

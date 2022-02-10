@@ -56,7 +56,7 @@ impl Pattern {
                     if line.starts_with("##") {
                         // Options line
                         options.parse_options(&line, line_number)?;
-                    } else if line.starts_with("#") {
+                    } else if line.starts_with('#') {
                         // Ignored line
                     } else {
                         // Treat everything else as a stitch
@@ -154,7 +154,7 @@ mod test {
         let input = b"k x6\nk x7";
 
         if let Err(parse_error) = Pattern::new(&input[..]) {
-            if let ParseErrorType::InvalidStitchCount(count) = **parse_error.error_type() {
+            if let ParseErrorType::InvalidStitchCount(count) = *parse_error.error_type() {
                 assert_eq!(count, 6);
             } else {
                 assert!(false, "Wrong error type returned");
