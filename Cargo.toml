@@ -1,6 +1,6 @@
 [package]
 name = "knitting_parse"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["James Mahler <james.mahler@gmail.com>"]
 edition = "2021"
 description = "A knitting parser library based on nom."
